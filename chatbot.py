@@ -27,6 +27,18 @@ Dr. Sumaiya Mohammad
 - Working at the institution since : 2023
 - School      : Monipur High School
 - College     : Viqarunnisa Noon College
+
+Working Experience & Responsibilities:
+- Served as Hostel Superintendent of Shila Islam Ladies Hostel, Shaheed Syed
+  Nazrul Islam Medical College, Kishoreganj.
+- Served as a member of the Hostel Disciplinary Committee of the medical college.
+- Served as a member of the Antiragging Committee of the medical college.
+- Current member of the Pair Medical College Visiting Committee, SSNIMC.
+- Current member of the Medical Education Unit of SSNIMC.
+- Posted as the Vice President of the Mymensingh region of the Bangladesh
+  Society of Physiologists.
+- Member of the Education Sub-committee, Operational Manual Reform Sub-committee
+  and Teachers Benefit Sub-committee of the Bangladesh Society of Physiologists.
 """
 
 SYSTEM_PROMPT = f"""

@@ -112,3 +112,15 @@ To stop the server, press **CTRL+C** in the terminal.
 - Working at the institution since: 2023
 - School: Monipur High School
 - College: Viqarunnisa Noon College
+
+### Working experience & responsibilities
+
+- Hostel Superintendent of Shila Islam Ladies Hostel, Shaheed Syed Nazrul Islam
+  Medical College, Kishoreganj
+- Member of the Hostel Disciplinary Committee, SSNIMC
+- Member of the Antiragging Committee, SSNIMC
+- Member of the Pair Medical College Visiting Committee, SSNIMC
+- Member of the Medical Education Unit, SSNIMC
+- Vice President of the Mymensingh region, Bangladesh Society of Physiologists
+- Member of the Education Sub-committee, Operational Manual Reform Sub-committee
+  and Teachers Benefit Sub-committee of the Bangladesh Society of Physiologists
