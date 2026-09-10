@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Sumaiya Mohammad - Personal Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="avatar" aria-hidden="true">🩺</div>
+      <div class="header-text">
+        <h1>Dr. Sumaiya Mohammad</h1>
+        <p>Personal Assistant Chatbot &middot; Dept. of Physiology, SSNIMC, Kishoreganj</p>
+      </div>
+      <button id="resetBtn" class="reset-btn" title="Start a new conversation">New chat</button>
+    </header>
+
+    <main id="chatWindow" class="chat-window"></main>
+
+    <form id="chatForm" class="input-bar" autocomplete="off">
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Ask me about Dr. Sumaiya Mohammad..."
+        maxlength="1000"
+        required
+      />
+      <button type="submit" id="sendBtn">Send</button>
+    </form>
+
+    <p id="errorBar" class="error-bar hidden"></p>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById("chatWindow");
+    const chatForm = document.getElementById("chatForm");
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const errorBar = document.getElementById("errorBar");
+
+    const sayings = [
+      "Hello! I am Dr. Sumaiya Mohammad's personal assistant. Ask me anything about her work, background, or research!",
+      "Hi there! Ask me about Dr. Sumaiya Mohammad - her teaching, institution, or educational background.",
+    ];
+
+    function addMessage(role, text) {
+      const wrapper = document.createElement("div");
+      wrapper.className = `message ${role}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+      wrapper.appendChild(bubble);
+
+      chatWindow.appendChild(wrapper);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      return bubble;
+    }
+
+    function addBanner(text) {
+      const banner = document.createElement("div");
+      banner.className = "banner";
+      banner.textContent = text;
+      chatWindow.appendChild(banner);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function showError(text) {
+      errorBar.textContent = text;
+      errorBar.classList.remove("hidden");
+      setTimeout(() => errorBar.classList.add("hidden"), 6000);
+    }
+
+    function seedGreeting() {
+      const greeting = sayings[Math.floor(Math.random() * sayings.length)];
+      addMessage("assistant", greeting);
+    }
+
+    async function sendMessage(text) {
+      addMessage("user", text);
+      messageInput.value = "";
+      sendBtn.disabled = true;
+      messageInput.disabled = true;
+
+      const typing = addMessage("assistant", "Typing...");
+      typing.classList.add("typing");
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Something went wrong.");
+        }
+        typing.textContent = data.reply;
+      } catch (err) {
+        typing.textContent = "Sorry, I couldn't respond right now.";
+        showError(err.message);
+      } finally {
+        typing.classList.remove("typing");
+        sendBtn.disabled = false;
+        messageInput.disabled = false;
+        messageInput.focus();
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      }
+    }
+
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = messageInput.value.trim();
+      if (text) sendMessage(text);
+    });
+
+    resetBtn.addEventListener("click", async () => {
+      try {
+        await fetch("/reset", { method: "POST" });
+      } catch (_) {
+        /* Server-side reset is best-effort */
+      }
+      chatWindow.innerHTML = "";
+      seedGreeting();
+      messageInput.focus();
+    });
+
+    seedGreeting();
+    messageInput.focus();
+  </script>
+</body>
+</html>

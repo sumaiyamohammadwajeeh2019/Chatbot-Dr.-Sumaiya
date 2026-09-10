@@ -1,0 +1,37 @@
+# Secrets - never commit your real API key
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Misc
+.DS_Store
+check_result.txt
+lsremote.txt
+push_result.txt
+
+# Debug / scratch files (untracked, kept on disk)
+*.log
+diag*.py
+diag*.txt
+fix_env*.py
+fix_env*_out.txt
+list_models.py
+models_output.txt
+probe_chat.py
+run_err.log
+run_out.log
+run_probe.py
+restart_out.txt
+restart_server.py
+server_err.log
+server_out.log
+server_status.txt
+smoke_test.py
+t1.txt
+test_model.py
