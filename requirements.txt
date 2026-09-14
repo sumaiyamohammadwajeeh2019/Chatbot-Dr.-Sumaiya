@@ -1,4 +1,11 @@
 # Crew Agent AI - runs locally, no API key needed.
 flask>=3.0.0
-crewai>=0.11.2
-langchain-core>=0.1.0
+
+# Pinned to the CrewAI/LangChain versions this project is tested against, so
+# a cloud build (Render) behaves exactly like the local one.
+crewai==0.11.2
+langchain-core>=0.1.42,<0.2
+
+# Production WSGI server used in the cloud (Linux). Gunicorn does not exist on
+# Windows, where you run "python app.py" instead - hence the marker.
+gunicorn>=21.2.0; sys_platform != "win32"

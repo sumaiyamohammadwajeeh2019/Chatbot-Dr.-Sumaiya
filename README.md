@@ -134,6 +134,59 @@ non-zero status if any check fails.
 
 ---
 
+## Deploy on Render (optional)
+
+`render.yaml` in this repository is a Render **Blueprint** that describes a free
+Python web service. No API key or secret has to be configured in the cloud
+either - the app is completely self-contained.
+
+Two files make the cloud build work:
+
+- `.python-version` (and the matching `PYTHON_VERSION` env var) - the Python
+  version the service builds with, because `crewai` needs Python 3.10 or newer.
+- `gunicorn` in `requirements.txt` - the production web server used in the
+  cloud. It is installed only on Linux; on Windows you keep using
+  `python app.py`.
+
+### With the Render CLI
+
+```bash
+# Authenticate once (or set RENDER_API_KEY in your environment)
+render login
+
+render services create \
+  --name crew-agent-ai \
+  --type web_service \
+  --repo https://github.com/sumaiyamohammadwajeeh2019/chatbot \
+  --branch main \
+  --runtime python \
+  --plan free \
+  --region singapore \
+  --build-command "pip install -r requirements.txt" \
+  --start-command "gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120" \
+  --health-check-path /health \
+  --env-var PYTHON_VERSION=3.11.9 \
+  --confirm
+
+# Watch the build, then read the logs
+render deploys create <service-id> --wait
+render logs --resources <service-id>
+```
+
+The service is live at `https://<service-name>.onrender.com`, and `/health` is
+used as the health check. Every push to `main` redeploys it automatically
+(auto-deploy).
+
+### From the dashboard instead
+
+**New +** then **Blueprint**, pick this repository, and Render reads `render.yaml`
+and creates the same service.
+
+> Free instances sleep after about 15 minutes without traffic and take roughly a
+> minute to wake again on the next request.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Fix |

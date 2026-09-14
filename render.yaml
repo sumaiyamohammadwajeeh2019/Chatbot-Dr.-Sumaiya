@@ -1,0 +1,21 @@
+# Render Blueprint for Crew Agent AI.
+#
+# The app needs no API key, so there are no secrets to configure.
+# Creating a Blueprint from this repo (or using the Render CLI) produces the
+# same service: a free Python web service that serves the chat UI.
+services:
+  - type: web
+    name: crew-agent-ai
+    runtime: python
+    plan: free
+    region: singapore
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /health
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
+    envVars:
+      # crewai 0.11.2 requires Python >=3.10,<4.0; 3.11 is what this build is
+      # tested against.
+      - key: PYTHON_VERSION
+        value: "3.11.9"
