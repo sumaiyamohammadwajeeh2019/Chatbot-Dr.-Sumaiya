@@ -1,5 +1,7 @@
-# Secrets - never commit your real API key
+# Crew Agent AI needs no API key: everything runs locally (no .env file).
+# The lines below also keep stray secret files out of the repository.
 .env
+*.env
 
 # Python
 __pycache__/

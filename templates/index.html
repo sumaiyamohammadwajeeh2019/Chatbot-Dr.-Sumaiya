@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dr. Sumaiya Mohammad - Personal Chatbot</title>
+  <title>{{ agent_name }} - Personal Chatbot for {{ person_name }}</title>
+  <!-- Inline icon, so the browser never asks for a missing favicon.ico -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>&#129658;</text></svg>">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -11,39 +13,57 @@
     <header class="header">
       <div class="avatar" aria-hidden="true">🩺</div>
       <div class="header-text">
-        <h1>Dr. Sumaiya Mohammad</h1>
-        <p>Personal Assistant Chatbot &middot; Dept. of Physiology, SSNIMC, Kishoreganj</p>
+        <h1>{{ agent_name }}</h1>
+        <p>Personal Assistant for {{ person_name }} &middot; Dept. of Physiology, SSNIMC, Kishoreganj</p>
       </div>
       <button id="resetBtn" class="reset-btn" title="Start a new conversation">New chat</button>
     </header>
 
     <main id="chatWindow" class="chat-window"></main>
 
+    <div id="quickQuestions" class="quick-questions"></div>
+
     <form id="chatForm" class="input-bar" autocomplete="off">
       <input
         type="text"
         id="messageInput"
-        placeholder="Ask me about Dr. Sumaiya Mohammad..."
+        placeholder="Ask me about {{ person_name }}..."
         maxlength="1000"
         required
       />
       <button type="submit" id="sendBtn">Send</button>
     </form>
 
-    <p id="errorBar" class="error-bar hidden"></p>
+    <p id="errorBar" class="error-bar hidden" role="alert"></p>
+
+    <footer class="footer">
+      Runs entirely on this computer &middot; no API key, no internet needed
+    </footer>
   </div>
 
   <script>
+    const agentName = {{ agent_name | tojson }};
+    const personName = {{ person_name | tojson }};
+
     const chatWindow = document.getElementById("chatWindow");
     const chatForm = document.getElementById("chatForm");
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     const resetBtn = document.getElementById("resetBtn");
     const errorBar = document.getElementById("errorBar");
+    const quickBox = document.getElementById("quickQuestions");
 
     const sayings = [
-      "Hello! I am Dr. Sumaiya Mohammad's personal assistant. Ask me anything about her work, background, or research!",
-      "Hi there! Ask me about Dr. Sumaiya Mohammad - her teaching, institution, or educational background.",
+      `Hello! I am the ${agentName}, ${personName}'s personal assistant. Ask me about her work, background or institution!`,
+      `Hi there! I am the ${agentName}. Ask me about ${personName}'s teaching, institution or educational background.`,
+    ];
+
+    const quickQuestions = [
+      "Who are you?",
+      "Who is " + personName + "?",
+      "Where does she work?",
+      "What is her educational background?",
+      "What committees is she a member of?",
     ];
 
     function addMessage(role, text) {
@@ -60,18 +80,17 @@
       return bubble;
     }
 
-    function addBanner(text) {
-      const banner = document.createElement("div");
-      banner.className = "banner";
-      banner.textContent = text;
-      chatWindow.appendChild(banner);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
     function showError(text) {
       errorBar.textContent = text;
       errorBar.classList.remove("hidden");
-      setTimeout(() => errorBar.classList.add("hidden"), 6000);
+      clearTimeout(showError.timer);
+      showError.timer = setTimeout(() => errorBar.classList.add("hidden"), 6000);
+    }
+
+    function setBusy(busy) {
+      sendBtn.disabled = busy;
+      messageInput.disabled = busy;
+      if (!busy) messageInput.focus();
     }
 
     function seedGreeting() {
@@ -79,56 +98,68 @@
       addMessage("assistant", greeting);
     }
 
-    async function sendMessage(text) {
-      addMessage("user", text);
-      messageInput.value = "";
-      sendBtn.disabled = true;
-      messageInput.disabled = true;
+    function renderQuickQuestions() {
+      quickBox.innerHTML = "";
+      quickQuestions.forEach((question) => {
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.textContent = question;
+        chip.addEventListener("click", () => sendMessage(question));
+        quickBox.appendChild(chip);
+      });
+    }
 
-      const typing = addMessage("assistant", "Typing...");
+    async function sendMessage(text) {
+      const message = text.trim();
+      if (!message) return;
+
+      addMessage("user", message);
+      messageInput.value = "";
+      setBusy(true);
+
+      const typing = addMessage("assistant", "");
       typing.classList.add("typing");
 
       try {
         const res = await fetch("/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text }),
+          body: JSON.stringify({ message: message }),
         });
 
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(data.error || "Something went wrong.");
         }
         typing.textContent = data.reply;
       } catch (err) {
-        typing.textContent = "Sorry, I couldn't respond right now.";
+        typing.textContent = "Sorry, I could not answer that just now.";
         showError(err.message);
       } finally {
         typing.classList.remove("typing");
-        sendBtn.disabled = false;
-        messageInput.disabled = false;
-        messageInput.focus();
+        setBusy(false);
         chatWindow.scrollTop = chatWindow.scrollHeight;
       }
     }
 
-    chatForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const text = messageInput.value.trim();
-      if (text) sendMessage(text);
+    chatForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage(messageInput.value);
     });
 
     resetBtn.addEventListener("click", async () => {
       try {
         await fetch("/reset", { method: "POST" });
       } catch (_) {
-        /* Server-side reset is best-effort */
+        /* the server-side reset is best effort */
       }
       chatWindow.innerHTML = "";
       seedGreeting();
       messageInput.focus();
     });
 
+    renderQuickQuestions();
     seedGreeting();
     messageInput.focus();
   </script>

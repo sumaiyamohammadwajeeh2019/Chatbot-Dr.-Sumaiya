@@ -1,51 +1,59 @@
-# Dr. Sumaiya Mohammad – Personal Assistant Chatbot
+# Crew Agent AI – Personal Assistant Chatbot for Dr. Sumaiya Mohammad
 
 A personal AI chatbot that answers questions about **Dr. Sumaiya Mohammad** —
 Assistant Professor, Department of Physiology, Shaheed Syed Nazrul Islam
 Medical College (SSNIMC), Kishoreganj.
 
-The bot runs as a small **Flask** web app, speaks to the **Groq API**
-(inference engine) using the LLM model `openai/gpt-oss-20b`, and remembers the
-conversation while the server is running.
+The bot runs as a small **Flask** web app and the answers come from a
+**CrewAI agent crew** (one Agent → one Task → sequential Process) that runs
+**on your own computer**.
+
+## No API key needed
+
+There is no API key, no `.env` file, no Groq/OpenAI account and no internet
+connection involved. Install the packages, start the server and chat — the bot
+works offline and is free to run.
 
 ---
 
 ## Features
 
-- Web chat interface (HTML + CSS + vanilla JS, no front-end build step)
-- Conversation memory within a single server session
+- Web chat interface (HTML + CSS + vanilla JS, no build step)
+- Conversation memory while the server is running
+- Quick-question buttons, so you can start with one click
 - "New chat" button to reset the conversation
-- Friendly error handling when the Groq API key is missing or the network fails
-- Runs on `localhost:5000` and is reachable from other devices on your LAN
+- Friendly answers for questions it cannot answer (it never invents facts)
+- Runs on `localhost:5000` and is reachable from other devices on your Wi-Fi
 
 ---
 
-## Project structure
+## How the "Crew Agent AI" works
 
-```
-chatbot/
-├── app.py               # Flask web server (routes: /, /chat, /reset)
-├── main.py              # Convenience launcher (same as python app.py)
-├── chatbot.py           # Bot core: system prompt + ChatSession (Groq API)
-├── requirements.txt     # Python dependencies
-├── templates/index.html # Chat interface
-├── static/style.css     # Chat styling
-├── .env.example         # Template for the environment variables (safe to commit)
-└── .env                 # YOUR REAL SECRETS — do not commit this file
-```
+| Part | File | Job |
+|------|------|-----|
+| `PROFILE` / `KNOWLEDGE` | `chatbot.py` | All facts about Dr. Sumaiya Mohammad, written as plain text |
+| `LocalAgentBrain` | `chatbot.py` | Matches your question to a topic and writes the reply |
+| `LocalCrewLLM` | `chatbot.py` | The language model that CrewAI drives — answered locally, never over the network |
+| `build_crew()` | `chatbot.py` | Builds the CrewAI Agent, Task and Crew |
+| `ChatSession` | `chatbot.py` | Keeps the conversation history, exposes `send()` / `reset()` |
+| `app.py` | `app.py` | Flask server with the routes `/`, `/chat`, `/reset`, `/health` |
+
+Each message is passed to a real CrewAI crew; the crew's "LLM" is a small
+local component that turns the question into an in-character reply. CrewAI's
+telemetry is switched off, so the app makes no outward network calls.
 
 ---
 
 ## Requirements
 
-- Python 3.10+ (the code uses `str | None` type hints)
-- A free **Groq API key** from <https://console.groq.com>
+- Python 3.10 or newer (the code uses `str | None` style type hints)
+- No API key, no account, no credit card
 
 ---
 
 ## Setup
 
-1. **Clone or copy the project** onto the machine where you want to run it.
+1. **Copy or clone the project** onto the machine where you want to run it.
 
 2. **Create a virtual environment** (recommended):
 
@@ -53,7 +61,7 @@ chatbot/
    python -m venv .venv
    ```
 
-   Then activate it:
+   Activate it:
 
    - Windows:  `.venv\Scripts\activate`
    - macOS/Linux:  `source .venv/bin/activate`
@@ -64,19 +72,11 @@ chatbot/
    python -m pip install -r requirements.txt
    ```
 
-4. **Create your `.env` file** — copy the template and add your own key:
+   There is nothing else to configure — no key, no `.env` file.
 
-   ```bash
-   cp .env.example .env      # Windows:  copy .env.example .env
-   ```
-
-   Then edit `.env` so `GROQ_API_KEY=your_real_groq_api_key`.
-
-   | Variable       | Meaning                                | Example                 |
-   |----------------|----------------------------------------|-------------------------|
-   | `GROQ_API_KEY` | Your Groq API key (required)           | `gsk_...`               |
-   | `MODEL`        | Groq model to use                      | `openai/gpt-oss-20b`    |
-   | `PORT`         | Port the Flask server listens on       | `5000`                  |
+| Variable | Meaning | Example |
+|----------|---------|---------|
+| `PORT` | Port the Flask server listens on (optional) | `5000` |
 
 ---
 
@@ -86,7 +86,8 @@ chatbot/
 python app.py
 ```
 
-Then open <http://localhost:5000> in your browser.
+Then open <http://localhost:5000> in your browser. Check
+<http://localhost:5000/health> if you want to confirm the server is alive.
 
 To stop the server, press **CTRL+C** in the terminal.
 
@@ -95,12 +96,61 @@ To stop the server, press **CTRL+C** in the terminal.
 
 ---
 
-## Security notes
+## What you can ask
 
-- **Never commit your real `.env` file.** It contains your private API key.
-  This project already ships a `.gitignore` that excludes `.env`.
-- If your key is ever exposed (e.g. pushed to a public repo), **revoke it
-  immediately** in the Groq console and generate a new one.
+- Who are you?
+- Who is Dr. Sumaiya Mohammad? / Tell me about her
+- What is her designation / department?
+- Where does she work? Since when?
+- Which school and college did she attend?
+- Was she a hostel superintendent?
+- What committees is she a member of?
+- What is her role in the Bangladesh Society of Physiologists?
+
+---
+
+## Changing the answers
+
+Everything the bot knows lives in `chatbot.py`:
+
+- `PROFILE` – the plain-text profile used as the agent's backstory.
+- `KNOWLEDGE` – a tuple of `Topic(name, keywords, answer)` entries. Add a
+  topic, add keywords to an existing one, or edit an answer. Multi-word
+  keywords match more strongly than single words, and small typos in the
+  question are tolerated automatically.
+
+---
+
+## Tests
+
+```bash
+python test_chatbot.py
+```
+
+The checks run entirely offline: they exercise the brain, the CrewAI crew, the
+Flask routes and the "no API key anywhere" rule. When the server is already
+running, the same script also checks it live over HTTP. The script exits with a
+non-zero status if any check fails.
+
+---
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `Address already in use` | Another program (often an old copy of this app) is using port 5000. Stop it, or run with another port: `set PORT=5001` then `python app.py` |
+| Browser shows "can't reach this page" | Make sure the terminal still shows the server running, then reload <http://localhost:5000> |
+| `ModuleNotFoundError: crewai` | Install the dependencies: `python -m pip install -r requirements.txt` |
+| A pydantic warning about V1/V2 models on start-up | Harmless: it comes from CrewAI's own LangChain integration and is filtered out by `chatbot.py` |
+
+---
+
+## Privacy
+
+- No API key or secret is stored anywhere in this project.
+- Nothing is sent to the internet: the answers are generated on this computer
+  (CrewAI telemetry is disabled).
+- Conversations live only in memory and disappear when the server stops.
 
 ---
 
@@ -115,8 +165,7 @@ To stop the server, press **CTRL+C** in the terminal.
 
 ### Working experience & responsibilities
 
-- Hostel Superintendent of Shila Islam Ladies Hostel, Shaheed Syed Nazrul Islam
-  Medical College, Kishoreganj
+- Hostel Superintendent of Shila Islam Ladies Hostel, SSNIMC, Kishoreganj
 - Member of the Hostel Disciplinary Committee, SSNIMC
 - Member of the Antiragging Committee, SSNIMC
 - Member of the Pair Medical College Visiting Committee, SSNIMC

@@ -136,6 +136,23 @@ body {
 .bubble.typing {
   color: var(--muted);
   font-style: italic;
+  min-width: 54px;
+}
+
+.bubble.typing::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: blink 1s infinite ease-in-out;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-3px); }
 }
 
 .banner {
@@ -143,6 +160,27 @@ body {
   font-size: 12.5px;
   color: var(--muted);
   margin: 4px 0;
+}
+
+.quick-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 22px 14px;
+}
+
+.chip {
+  padding: 8px 13px;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--accent);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: rgba(56, 189, 248, 0.18);
 }
 
 .input-bar {
@@ -192,6 +230,14 @@ body {
   background: #7f1d1d;
   color: #fecaca;
   font-size: 13px;
+}
+
+.footer {
+  padding: 10px 22px 14px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .hidden {
