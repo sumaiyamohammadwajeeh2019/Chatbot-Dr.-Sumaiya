@@ -31,7 +31,8 @@ works offline and is free to run.
 
 | Part | File | Job |
 |------|------|-----|
-| `PROFILE` / `KNOWLEDGE` | `chatbot.py` | All facts about Dr. Sumaiya Mohammad, written as plain text |
+| `BIO_DATA` / `PROFILE` | `chatbot.py` | Every field of her official HRIS Bio-Data record, stored as structured data and rendered for the agent |
+| `KNOWLEDGE` | `chatbot.py` | Topic entries that turn a question into an answer from that data |
 | `LocalAgentBrain` | `chatbot.py` | Matches your question to a topic and writes the reply |
 | `LocalCrewLLM` | `chatbot.py` | The language model that CrewAI drives — answered locally, never over the network |
 | `build_crew()` | `chatbot.py` | Builds the CrewAI Agent, Task and Crew |
@@ -106,6 +107,14 @@ To stop the server, press **CTRL+C** in the terminal.
 - Was she a hostel superintendent?
 - What committees is she a member of?
 - What is her role in the Bangladesh Society of Physiologists?
+- What is her father's / mother's name?
+- What is her religion? When was she born?
+- What is her mobile number / email address / NID?
+- What is her permanent address? Where does she live?
+- What is her marital status? Is she a freedom fighter?
+- What is her BCS batch / job status / staff professional category?
+- Tell me about her government service record / HRIS Bio-Data
+- Show me all her information
 
 ---
 
@@ -113,7 +122,11 @@ To stop the server, press **CTRL+C** in the terminal.
 
 Everything the bot knows lives in `chatbot.py`:
 
-- `PROFILE` – the plain-text profile used as the agent's backstory.
+- `BIO_DATA` – a structured dictionary with every field of her official HRIS
+  Bio-Data record (personal information, other information, service record and
+  education). Edit a value here once and every answer that uses it updates.
+- `PROFILE` – generated from `BIO_DATA` by `_format_bio_data()`; the plain-text
+  profile used as the agent's backstory.
 - `KNOWLEDGE` – a tuple of `Topic(name, keywords, answer)` entries. Add a
   topic, add keywords to an existing one, or edit an answer. Multi-word
   keywords match more strongly than single words, and small typos in the
@@ -215,6 +228,29 @@ and creates the same service.
 - Working at the institution since: 2023
 - School: Monipur High School
 - College: Viqarunnisa Noon College
+- Degree: MBBS (2012)
+
+### Personal information (official HRIS Bio-Data)
+
+- Father's name: Md. Abul Bashar Sarker · Mother's name: Khaleda Qusem
+- Date of birth: 01-01-1988 · Sex: Female · Marital status: Married
+- Religion: Islam · Tribe: Not Tribal · Freedom fighter: Yes
+- Lives in a government quarter: No · Professional discipline: N/A
+- Mobile: 01742701642 · Email: sumaiya.arba@yahoo.com · NID: 4798517233107
+- Mailing/present address: OSD, DGHS, Deputation BSMMU, Dhaka
+- Permanent address: Vill- Mehar, Maijkhar, P- Badorpur, Chandina, Comilla
+- PRL date: 31-12-2047
+
+### Government service record (official HRIS Bio-Data)
+
+- BCS (Health) cadre, BCS Batch No 32; staff professional category: Physician
+- HRIS ID: 89222 · Post ID: 147958 · Doctor Code No: 128339
+- Original designation: Medical Officer (MO)
+- Joined government health service: 30-10-2013 (first appointment 08-10-2013)
+- Service confirmed: 30-10-2013 (Confirmation GO No 385, dated 20-06-2017)
+- Study deputation at Bangabandhu Sheikh Mujib Medical University (BSMMU),
+  Dhaka (record dated 21-01-2021); two study deputations in total
+- Pay scale 9, basic pay 34,170 (as recorded in 2021); ACRs 2014–2019
 
 ### Working experience & responsibilities
 

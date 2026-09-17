@@ -9,8 +9,9 @@ This module runs entirely on your own computer:
 
 How it works
 ------------
-1. PROFILE and KNOWLEDGE below hold everything the bot knows about
-   Dr. Sumaiya Mohammad (plain, editable text).
+1. BIO_DATA below stores every field of her official HRIS Bio-Data record;
+   PROFILE renders it for the agent prompt and KNOWLEDGE turns it into
+   answers (plain, editable text).
 2. LocalAgentBrain is the bot's brain: it turns a question into an
    in-character reply by matching that question against the knowledge base.
 3. LocalCrewLLM wraps the brain in the LangChain LLM interface that CrewAI
@@ -79,29 +80,140 @@ _disable_crewai_telemetry()
 # ---------------------------------------------------------------------------
 # Personal profile of Dr. Sumaiya Mohammad
 # ---------------------------------------------------------------------------
-PROFILE = """
-Dr. Sumaiya Mohammad
-- Designation : Assistant Professor
-- Department  : Department of Physiology
-- Institution : Shaheed Syed Nazrul Islam Medical College, Kishoreganj
-- Working at the institution since : 2023
-- School      : Monipur High School
-- College     : Viqarunnisa Noon College
+BIO_DATA: Dict[str, Dict[str, str]] = {
+    "personal": {
+        "father_name": "Md. Abul Bashar Sarker",
+        "mother_name": "Khaleda Qusem",
+        "mailing_address": "OSD, DGHS, Deputation BSMMU, Dhaka",
+        "permanent_address": (
+            "Vill- Mehar, Maijkhar, P- Badorpur, Chandina, Comilla"
+        ),
+        "religion": "Islam",
+        "mobile_no": "01742701642",
+        "nid": "4798517233107",
+        "email": "sumaiya.arba@yahoo.com",
+        "date_of_birth": "01-01-1988",
+        "prl_date": "31-12-2047",
+        "sex": "Female",
+        "marital_status": "Married",
+    },
+    "other": {
+        "professional_discipline": "N/A",
+        "staff_professional_category": "Physician",
+        "job_status": "Cadre",
+        "tribe": "Not Tribal",
+        "freedom_fighter": "Yes",
+        "lives_in_govt_quarter": "No",
+    },
+    "service": {
+        "hris_id": "89222",
+        "post_id": "147958",
+        "code_no": "128339",
+        "bcs_batch_no": "32",
+        "status": "Posted - On deputation; posted as study deputation",
+        "deputation": (
+            "Study deputation, Bangabandhu Sheikh Mujib Medical University "
+            "(BSMMU), Dhaka"
+        ),
+        "number_of_study_deputations": "2",
+        "original_designation": "Medical Officer (MO)",
+        "joining_date_govt_service": "30-10-2013",
+        "joining_date_current_place": "01-03-2019",
+        "joining_date_current_designation": "01-03-2019",
+        "payscale": "9",
+        "basic_pay": "34170",
+        "acr_availability": "2019, 2018, 2017, 2016, 2015, 2014",
+        "first_appointment_go": "05.00.0000.147.32.002.13.250",
+        "first_appointment_sl_no": "128327",
+        "first_appointment_date": "08-10-2013",
+        "senior_scale_pass": "Yes",
+        "experience_in_village": "Yes",
+        "service_confirmation_go": "385",
+        "service_confirmation_go_date": "20-06-2017",
+        "service_confirmation_date": "30-10-2013",
+        "regularization_go": "05.00.0000.147.32.002.13.250",
+        "regularization_sl_no": "339",
+        "regularization_date": "08-10-2013",
+    },
+    "education": {
+        "bachelor": "Bachelor-MBBS",
+        "bachelor_year": "2012",
+    },
+}
 
-Working Experience & Responsibilities:
-- Served as Hostel Superintendent of Shila Islam Ladies Hostel, Shaheed Syed
-  Nazrul Islam Medical College, Kishoreganj.
-- Served as a member of the Hostel Disciplinary Committee of the medical
-  college.
-- Served as a member of the Antiragging Committee of the medical college.
-- Current member of the Pair Medical College Visiting Committee, SSNIMC.
-- Current member of the Medical Education Unit of SSNIMC.
-- Posted as the Vice President of the Mymensingh region of the Bangladesh
-  Society of Physiologists.
-- Member of the Education Sub-committee, Operational Manual Reform
-  Sub-committee and Teachers Benefit Sub-committee of the Bangladesh Society
-  of Physiologists.
-"""
+# Shorthand sections used by the topics and the profile renderer below.
+_P = BIO_DATA["personal"]
+_O = BIO_DATA["other"]
+_S = BIO_DATA["service"]
+_E = BIO_DATA["education"]
+
+
+def _format_bio_data() -> str:
+    """Render every stored HRIS field as plain text for the agent's prompt."""
+    return (
+        "Dr. Sumaiya Mohammad\n"
+        "- Designation: Assistant Professor\n"
+        "- Department: Department of Physiology\n"
+        "- Institution: Shaheed Syed Nazrul Islam Medical College, Kishoreganj\n"
+        "- Working at the institution since: 2023\n"
+        "- School: Monipur High School\n"
+        "- College: Viqarunnisa Noon College\n\n"
+        "Official HRIS Bio-Data record (Directorate General of Health Services,\n"
+        "record dated 21-01-2021):\n"
+        "Personal Information:\n"
+        f"- Father's Name: {_P['father_name']}\n"
+        f"- Mother's Name: {_P['mother_name']}\n"
+        f"- Mailing/Present Address: {_P['mailing_address']}\n"
+        f"- Permanent Address: {_P['permanent_address']}\n"
+        f"- Religion: {_P['religion']}\n"
+        f"- Mobile No: {_P['mobile_no']}\n"
+        f"- NID: {_P['nid']}\n"
+        f"- Email: {_P['email']}\n"
+        f"- Date of Birth: {_P['date_of_birth']}\n"
+        f"- PRL Date: {_P['prl_date']}\n"
+        f"- Sex: {_P['sex']}\n"
+        f"- Marital Status: {_P['marital_status']}\n\n"
+        "Other Information:\n"
+        f"- Professional Discipline: {_O['professional_discipline']}\n"
+        f"- Staff Professional Category: {_O['staff_professional_category']}\n"
+        f"- Job Status: {_O['job_status']}\n"
+        f"- Tribe: {_O['tribe']}\n"
+        f"- Freedom Fighter: {_O['freedom_fighter']}\n"
+        f"- Lives in Govt. quarter: {_O['lives_in_govt_quarter']}\n\n"
+        "Service Record:\n"
+        f"- HRIS ID: {_S['hris_id']}\n"
+        f"- Post ID: {_S['post_id']}\n"
+        f"- Code No (Doctors Only): {_S['code_no']}\n"
+        f"- BCS Batch No: {_S['bcs_batch_no']}\n"
+        f"- Status: {_S['status']}\n"
+        f"- Deputation: {_S['deputation']}\n"
+        f"- Number of study deputations: {_S['number_of_study_deputations']}\n"
+        f"- Original Designation: {_S['original_designation']}\n"
+        f"- Joining date (Govt. health service): "
+        f"{_S['joining_date_govt_service']}\n"
+        f"- Joining date (Current place): {_S['joining_date_current_place']}\n"
+        f"- Joining date (Current designation): "
+        f"{_S['joining_date_current_designation']}\n"
+        f"- Current Payscale Hold: {_S['payscale']}\n"
+        f"- Current Basic Pay: {_S['basic_pay']}\n"
+        f"- ACR Availability: {_S['acr_availability']}\n"
+        f"- First Appointment GO No: {_S['first_appointment_go']}, "
+        f"SL No: {_S['first_appointment_sl_no']}, "
+        f"Date: {_S['first_appointment_date']}\n"
+        f"- Senior Scale Pass: {_S['senior_scale_pass']}\n"
+        f"- Experience in Village: {_S['experience_in_village']}\n"
+        f"- Service Confirmation GO No: {_S['service_confirmation_go']}, "
+        f"GO Date: {_S['service_confirmation_go_date']}, "
+        f"Service Confirmation Date: {_S['service_confirmation_date']}\n"
+        f"- BCS/PSC Regularization GO: {_S['regularization_go']}, "
+        f"SL No: {_S['regularization_sl_no']}, "
+        f"Date: {_S['regularization_date']}\n\n"
+        "Education:\n"
+        f"- {_E['bachelor']}: MBBS, {_E['bachelor_year']}\n"
+    )
+
+
+PROFILE = _format_bio_data()
 
 SYSTEM_PROMPT = f"""
 You are the {AGENT_NAME} - a friendly and professional personal assistant
@@ -114,6 +226,8 @@ Guidelines:
 - Answer accurately and warmly, in the first person as her personal assistant
   (for example: "She is an Assistant Professor ...").
 - Keep replies clear, concise and helpful.
+- Answer questions about her personal information directly from the HRIS
+  Bio-Data details in the profile above.
 - If you do not know something about her, say so politely instead of guessing.
 - Never invent contact details, research work or other personal information.
 """
@@ -127,22 +241,27 @@ OVERVIEW_ANSWER = (
     "She is an Assistant Professor in the Department of Physiology at "
     "Shaheed Syed Nazrul Islam Medical College (SSNIMC), Kishoreganj, and she "
     "has been working there since 2023. She studied at Monipur High School and "
-    "at Viqarunnisa Noon College. Alongside her teaching she served as the "
-    "Hostel Superintendent of Shila Islam Ladies Hostel and as a member of the "
-    "Hostel Disciplinary Committee and of the Antiragging Committee, and she is "
-    "currently a member of the Pair Medical College Visiting Committee and of "
-    "the Medical Education Unit at SSNIMC. She is also the Vice President of "
-    "the Mymensingh region of the Bangladesh Society of Physiologists, and a "
-    "member of the Education Sub-committee, the Operational Manual Reform "
-    "Sub-committee and the Teachers Benefit Sub-committee of the Bangladesh "
-    "Society of Physiologists."
+    "at Viqarunnisa Noon College, and she completed her MBBS in 2012. In her "
+    "official HRIS record she is a BCS (Health) cadre officer from Batch 32, "
+    "originally a Medical Officer, and she was posted on study deputation at "
+    "BSMMU. She has served as the Hostel Superintendent of Shila Islam Ladies "
+    "Hostel and as a member of the Hostel Disciplinary Committee and of the "
+    "Antiragging Committee, and she is currently a member of the Pair Medical "
+    "College Visiting Committee and of the Medical Education Unit at SSNIMC. "
+    "She is also the Vice President of the Mymensingh region of the Bangladesh "
+    "Society of Physiologists, and a member of the Education Sub-committee, "
+    "the Operational Manual Reform Sub-committee and the Teachers Benefit "
+    "Sub-committee of the Bangladesh Society of Physiologists."
 )
 
 UNKNOWN_ANSWER = (
     "I'm sorry, I don't have that information about Dr. Sumaiya Mohammad and "
     "I would rather not guess.\n\n"
     "I can help with her designation, department, institution, educational "
-    "background, teaching, and the committees and societies she is part of."
+    "background, MBBS degree, personal information (family, date of birth, "
+    "religion, addresses and contact details), her complete government service "
+    "record, her teaching, and the committees and societies she is part of. "
+    "You can also ask for all her information at once."
 )
 
 FOLLOW_UP_CUES: Tuple[str, ...] = (
@@ -179,9 +298,11 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         ),
         f"I am the {AGENT_NAME} - {PERSON_NAME}'s personal assistant chatbot. "
         "I can tell you about her designation, department and institution, her "
-        "educational background, her teaching, and the committees and societies "
-        "she works with. I run here on this computer, so no API key and no "
-        "internet connection are needed.",
+        "educational background and MBBS degree, her personal information "
+        "(family, date of birth, religion, addresses and contact details), her "
+        "complete government service record, her teaching, and the committees "
+        "and societies she works with. I run here on this computer, so no API "
+        "key and no internet connection are needed.",
     ),
     Topic(
         "overview",
@@ -263,7 +384,201 @@ KNOWLEDGE: Tuple[Topic, ...] = (
             "academic", "qualification", "degree", "where did she study",
         ),
         "She studied at Monipur High School and then at Viqarunnisa Noon "
-        "College.",
+        f"College. She completed her {_E['bachelor']} degree in "
+        f"{_E['bachelor_year']}.",
+    ),
+    Topic(
+        "mbbs",
+        (
+            "mbbs", "bachelor", "medical degree", "mbbs degree", "graduation",
+            "graduate", "when did she graduate", "doctor",
+        ),
+        f"Yes, she is a doctor. She completed her {_E['bachelor']} degree in "
+        f"{_E['bachelor_year']}, and her staff professional category is "
+        f"{_O['staff_professional_category']}, according to her official HRIS "
+        "record.",
+    ),
+    Topic(
+        "bcs",
+        (
+            "bcs", "batch", "bcs batch", "cadre", "health cadre", "batch number",
+        ),
+        f"She is a BCS (Health) cadre officer from BCS Batch No "
+        f"{_S['bcs_batch_no']}, with a job status of {_O['job_status']}, "
+        "according to her official HRIS record.",
+    ),
+    Topic(
+        "government_service",
+        (
+            "government service", "govt service", "government health service",
+            "joined the government", "first appointment", "service confirmation",
+            "senior scale", "regularization", "village experience",
+            "experience in village",
+        ),
+        f"She joined the government health service on 30 October 2013. Her "
+        f"first appointment GO No is {_S['first_appointment_go']} (SL No "
+        f"{_S['first_appointment_sl_no']}, dated "
+        f"{_S['first_appointment_date']}) and her service was confirmed on 30 "
+        f"October 2013 (Service Confirmation GO No "
+        f"{_S['service_confirmation_go']}, dated "
+        f"{_S['service_confirmation_go_date']}). She has passed the senior "
+        "scale and has experience of working in a village.",
+    ),
+    Topic(
+        "service_record",
+        (
+            "service record", "hris", "bio data", "biodata", "post id",
+            "code no", "doctor code", "payscale", "pay scale", "basic pay",
+            "acr",
+        ),
+        f"According to her official HRIS Bio-Data record of the Directorate "
+        f"General of Health Services, her HRIS ID is {_S['hris_id']}, her "
+        f"Post ID is {_S['post_id']} and her doctor code number is "
+        f"{_S['code_no']}. Her original designation is "
+        f"{_S['original_designation']}, she holds pay scale {_S['payscale']} "
+        f"with a basic pay of {_S['basic_pay']} (as recorded in 2021), and "
+        "ACRs are available for 2014 to 2019.",
+    ),
+    Topic(
+        "deputation",
+        (
+            "deputation", "study deputation", "bsmmu", "on deputation",
+            "bangabandhu sheikh mujib", "osd",
+        ),
+        f"According to her official HRIS record (dated 21 January 2021), she "
+        f"was posted on study deputation at Bangabandhu Sheikh Mujib Medical "
+        f"University (BSMMU), Dhaka, and the record shows "
+        f"{_S['number_of_study_deputations']} study deputations in total. Her "
+        f"original designation is {_S['original_designation']}.",
+    ),
+    Topic(
+        "father",
+        ("father", "father's name", "fathers name", "her dad"),
+        f"Her father's name is {_P['father_name']}, according to her official "
+        "HRIS record.",
+    ),
+    Topic(
+        "mother",
+        ("mother", "mother's name", "mothers name", "her mom"),
+        f"Her mother's name is {_P['mother_name']}, according to her official "
+        "HRIS record.",
+    ),
+    Topic(
+        "parents",
+        ("parents", "father and mother", "mother and father"),
+        f"Her father's name is {_P['father_name']} and her mother's name is "
+        f"{_P['mother_name']}, according to her official HRIS record.",
+    ),
+    Topic(
+        "religion",
+        ("religion", "religious", "muslim", "islam", "faith"),
+        f"Her religion is {_P['religion']}, according to her official HRIS "
+        "record.",
+    ),
+    Topic(
+        "date_of_birth",
+        (
+            "date of birth", "dob", "born", "birth", "birthday",
+            "how old", "age",
+        ),
+        f"Her date of birth is {_P['date_of_birth']} (1 January 1988), "
+        "according to her official HRIS record.",
+    ),
+    Topic(
+        "prl",
+        ("prl", "preparatory retirement", "retirement", "retire"),
+        f"Her PRL (preparatory retirement from service) date is "
+        f"{_P['prl_date']}, according to her official HRIS record.",
+    ),
+    Topic(
+        "sex",
+        ("sex", "gender"),
+        f"Her sex is recorded as {_P['sex']} in her official HRIS record.",
+    ),
+    Topic(
+        "marital_status",
+        ("marital status", "marital", "married", "marriage"),
+        f"Her marital status is {_P['marital_status']}, according to her "
+        "official HRIS record.",
+    ),
+    Topic(
+        "mobile",
+        (
+            "mobile", "mobile number", "mobile no", "phone", "phone number",
+            "cell", "cell number", "contact number", "whatsapp",
+        ),
+        f"Her mobile number is {_P['mobile_no']}, according to her official "
+        "HRIS record.",
+    ),
+    Topic(
+        "email",
+        (
+            "email", "e mail", "mail", "email address", "e mail address",
+            "mail id", "yahoo",
+        ),
+        f"Her email address is {_P['email']}, according to her official HRIS "
+        "record.",
+    ),
+    Topic(
+        "nid",
+        (
+            "nid", "national id", "id card", "identity card", "id number",
+            "voter id", "national identity",
+        ),
+        f"Her NID (National ID) number is {_P['nid']}, according to her "
+        "official HRIS record.",
+    ),
+    Topic(
+        "address",
+        (
+            "address", "mailing address", "present address",
+            "permanent address", "village", "home district",
+            "where does she live", "where she lives", "comilla", "badorpur",
+        ),
+        f"Her mailing/present address is {_P['mailing_address']}, and her "
+        f"permanent address is {_P['permanent_address']}, according to her "
+        "official HRIS record.",
+    ),
+    Topic(
+        "tribe",
+        ("tribe", "tribal"),
+        f"Her tribe is recorded as {_O['tribe']} in her official HRIS record.",
+    ),
+    Topic(
+        "freedom_fighter",
+        ("freedom fighter", "freedom"),
+        f"Her HRIS record lists her as a freedom fighter (Freedom Fighter: "
+        f"{_O['freedom_fighter']}).",
+    ),
+    Topic(
+        "govt_quarter",
+        ("quarter", "quarters", "govt quarter", "government quarter"),
+        f"According to her official HRIS record she does not live in a "
+        f"government quarter (Lives in Govt. quarter: "
+        f"{_O['lives_in_govt_quarter']}).",
+    ),
+    Topic(
+        "professional_info",
+        (
+            "professional category", "staff category", "physician",
+            "professional discipline", "job status",
+        ),
+        f"According to her official HRIS record her staff professional "
+        f"category is {_O['staff_professional_category']}, her job status is "
+        f"{_O['job_status']} and her professional discipline is recorded as "
+        f"{_O['professional_discipline']}.",
+    ),
+    Topic(
+        "full_record",
+        (
+            "all information", "all data", "all details", "everything",
+            "all her information", "her information", "information about her",
+            "her details", "her data", "her bio data", "her biodata",
+            "full profile", "full record", "complete record", "entire record",
+            "whole record", "all fields", "every detail",
+        ),
+        "Here is her complete HRIS Bio-Data record (dated 21 January 2021):"
+        f"\n\n{_format_bio_data().strip()}",
     ),
     Topic(
         "hostel",
@@ -347,14 +662,15 @@ KNOWLEDGE: Tuple[Topic, ...] = (
     Topic(
         "contact",
         (
-            "contact", "email", "e mail", "phone", "mobile", "number",
-            "address", "appointment", "consult", "meet her", "reach her",
-            "how can i reach",
+            "contact", "contact details", "contact information", "reach her",
+            "get in touch", "how can i reach", "appointment", "consult",
+            "meet her", "talk to her",
         ),
-        "I do not have her personal contact details, so I cannot share a phone "
-        "number or an email address. The best way to reach her is through the "
-        "Department of Physiology at Shaheed Syed Nazrul Islam Medical College, "
-        "Kishoreganj.",
+        f"You can reach her on her mobile number {_P['mobile_no']} or by "
+        f"email at {_P['email']}. Her mailing/present address is "
+        f"{_P['mailing_address']}. For professional matters, the Department "
+        "of Physiology at Shaheed Syed Nazrul Islam Medical College, "
+        "Kishoreganj is also a good way to get in touch.",
     ),
     Topic(
         "research",
