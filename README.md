@@ -113,6 +113,8 @@ To stop the server, press **CTRL+C** in the terminal.
 - What is her permanent address? Where does she live?
 - What is her marital status? Is she a freedom fighter?
 - What is her BCS batch / job status / staff professional category?
+- What is her highest degree (MD, Physiology)?
+- What is her basic pay / pay scale / post ID?
 - Tell me about her government service record / HRIS Bio-Data
 - Show me all her information
 
@@ -225,32 +227,38 @@ and creates the same service.
 - Designation: Assistant Professor
 - Department: Department of Physiology
 - Institution: Shaheed Syed Nazrul Islam Medical College, Kishoreganj
-- Working at the institution since: 2023
+- Joined the institution: 24-10-2021 (Assistant Professor since 16-03-2022)
 - School: Monipur High School
 - College: Viqarunnisa Noon College
-- Degree: MBBS (2012)
+- Degrees: MBBS (2011) · MD (Physiology, 2020)
 
 ### Personal information (official HRIS Bio-Data)
 
 - Father's name: Md. Abul Bashar Sarker · Mother's name: Khaleda Qusem
 - Date of birth: 01-01-1988 · Sex: Female · Marital status: Married
 - Religion: Islam · Tribe: Not Tribal · Freedom fighter: Yes
-- Lives in a government quarter: No · Professional discipline: N/A
+- Lives in a government quarter: No · Professional discipline: Physiology
 - Mobile: 01742701642 · Email: sumaiya.arba@yahoo.com · NID: 4798517233107
-- Mailing/present address: OSD, DGHS, Deputation BSMMU, Dhaka
-- Permanent address: Vill- Mehar, Maijkhar, P- Badorpur, Chandina, Comilla
-- PRL date: 31-12-2047
+- Mailing/present address: Shaheed Syed Nazrul Islam Medical College,
+  Sadar, Kishoreganj
+- Permanent address: Vill- Mehar, Maijkhar, PO- Badorpur Bazar,
+  Upazila- Chandina, Dist- Comilla
+- PRL date: 01-01-2048
 
 ### Government service record (official HRIS Bio-Data)
 
 - BCS (Health) cadre, BCS Batch No 32; staff professional category: Physician
-- HRIS ID: 89222 · Post ID: 147958 · Doctor Code No: 128339
+- HRIS ID: 89222 · Post ID: 165084 · Doctor Code No: 128339
 - Original designation: Medical Officer (MO)
+- Status: Posted, posted as Current Charge · Joining back verified: 1
 - Joined government health service: 30-10-2013 (first appointment 08-10-2013)
-- Service confirmed: 30-10-2013 (Confirmation GO No 385, dated 20-06-2017)
-- Study deputation at Bangabandhu Sheikh Mujib Medical University (BSMMU),
-  Dhaka (record dated 21-01-2021); two study deputations in total
-- Pay scale 9, basic pay 34,170 (as recorded in 2021); ACRs 2014–2019
+- Service confirmed: 30-10-2013 (Confirmation GO No
+  45.143.069.02.00.003.2016-385, SL No 1178, dated 20-06-2017)
+- Joined current place (SSNIMC): 24-10-2021 · current designation
+  (Assistant Professor, Physiology): 16-03-2022
+- Two study deputations in total; earlier record: study deputation at
+  Bangabandhu Sheikh Mujib Medical University (BSMMU), Dhaka
+- Post pay scale 6, current payscale hold 9, basic pay 35,880; ACRs 2014–2020
 
 ### Working experience & responsibilities
 

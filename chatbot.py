@@ -84,21 +84,24 @@ BIO_DATA: Dict[str, Dict[str, str]] = {
     "personal": {
         "father_name": "Md. Abul Bashar Sarker",
         "mother_name": "Khaleda Qusem",
-        "mailing_address": "OSD, DGHS, Deputation BSMMU, Dhaka",
+        "mailing_address": (
+            "Shaheed Syed Nazrul Islam Medical College, Sadar, Kishoreganj"
+        ),
         "permanent_address": (
-            "Vill- Mehar, Maijkhar, P- Badorpur, Chandina, Comilla"
+            "Vill- Mehar, Maijkhar, PO- Badorpur Bazar, Upazila- Chandina, "
+            "Dist- Comilla"
         ),
         "religion": "Islam",
         "mobile_no": "01742701642",
         "nid": "4798517233107",
         "email": "sumaiya.arba@yahoo.com",
         "date_of_birth": "01-01-1988",
-        "prl_date": "31-12-2047",
+        "prl_date": "01-01-2048",
         "sex": "Female",
         "marital_status": "Married",
     },
     "other": {
-        "professional_discipline": "N/A",
+        "professional_discipline": "Physiology",
         "staff_professional_category": "Physician",
         "job_status": "Cadre",
         "tribe": "Not Tribal",
@@ -107,37 +110,45 @@ BIO_DATA: Dict[str, Dict[str, str]] = {
     },
     "service": {
         "hris_id": "89222",
-        "post_id": "147958",
+        "post_id": "165084",
         "code_no": "128339",
         "bcs_batch_no": "32",
-        "status": "Posted - On deputation; posted as study deputation",
-        "deputation": (
-            "Study deputation, Bangabandhu Sheikh Mujib Medical University "
-            "(BSMMU), Dhaka"
+        "status": "Posted",
+        "posted_as": "Current Charge",
+        "joining_back_verified": "1",
+        "present_posting": (
+            "Assistant Professor (Physiology), Post Pay Scale 6, "
+            "Shaheed Syed Nazrul Islam Medical College, Kishoreganj"
         ),
         "number_of_study_deputations": "2",
         "original_designation": "Medical Officer (MO)",
         "joining_date_govt_service": "30-10-2013",
-        "joining_date_current_place": "01-03-2019",
-        "joining_date_current_designation": "01-03-2019",
+        "joining_date_current_place": "24-10-2021",
+        "joining_date_current_designation": "16-03-2022",
+        "post_pay_scale": "6",
         "payscale": "9",
-        "basic_pay": "34170",
-        "acr_availability": "2019, 2018, 2017, 2016, 2015, 2014",
+        "basic_pay": "35880",
+        "acr_availability": "2020, 2019, 2018, 2017, 2016, 2015, 2014",
         "first_appointment_go": "05.00.0000.147.32.002.13.250",
-        "first_appointment_sl_no": "128327",
+        "first_appointment_sl_no": "327",
         "first_appointment_date": "08-10-2013",
         "senior_scale_pass": "Yes",
         "experience_in_village": "Yes",
-        "service_confirmation_go": "385",
+        "service_confirmation_go": "45.143.069.02.00.003.2016-385",
+        "service_confirmation_sl_no": "1178",
         "service_confirmation_go_date": "20-06-2017",
         "service_confirmation_date": "30-10-2013",
         "regularization_go": "05.00.0000.147.32.002.13.250",
-        "regularization_sl_no": "339",
+        "regularization_sl_no": "327",
         "regularization_date": "08-10-2013",
     },
     "education": {
         "bachelor": "Bachelor-MBBS",
-        "bachelor_year": "2012",
+        "bachelor_year": "2011",
+        "masters": "Masters-MD (any of health sciences)",
+        "masters_degree": "MD",
+        "masters_discipline": "Physiology",
+        "masters_year": "2020",
     },
 }
 
@@ -152,14 +163,16 @@ def _format_bio_data() -> str:
     """Render every stored HRIS field as plain text for the agent's prompt."""
     return (
         "Dr. Sumaiya Mohammad\n"
-        "- Designation: Assistant Professor\n"
+        "- Designation: Assistant Professor (Physiology)\n"
         "- Department: Department of Physiology\n"
         "- Institution: Shaheed Syed Nazrul Islam Medical College, Kishoreganj\n"
-        "- Working at the institution since: 2023\n"
+        "- Joined the institution (current place): 24-10-2021\n"
+        "- Current designation since: 16-03-2022\n"
         "- School: Monipur High School\n"
         "- College: Viqarunnisa Noon College\n\n"
-        "Official HRIS Bio-Data record (Directorate General of Health Services,\n"
-        "record dated 21-01-2021):\n"
+        "Official HRIS Bio-Data record (Directorate General of Health "
+        "Services, https://hrm.dghs.gov.bd/providers/89222/bio, signed "
+        "25-10-2026):\n"
         "Personal Information:\n"
         f"- Father's Name: {_P['father_name']}\n"
         f"- Mother's Name: {_P['mother_name']}\n"
@@ -186,7 +199,9 @@ def _format_bio_data() -> str:
         f"- Code No (Doctors Only): {_S['code_no']}\n"
         f"- BCS Batch No: {_S['bcs_batch_no']}\n"
         f"- Status: {_S['status']}\n"
-        f"- Deputation: {_S['deputation']}\n"
+        f"- Posted as: {_S['posted_as']}\n"
+        f"- Joining back verified: {_S['joining_back_verified']}\n"
+        f"- Present posting: {_S['present_posting']}\n"
         f"- Number of study deputations: {_S['number_of_study_deputations']}\n"
         f"- Original Designation: {_S['original_designation']}\n"
         f"- Joining date (Govt. health service): "
@@ -194,6 +209,7 @@ def _format_bio_data() -> str:
         f"- Joining date (Current place): {_S['joining_date_current_place']}\n"
         f"- Joining date (Current designation): "
         f"{_S['joining_date_current_designation']}\n"
+        f"- Post Pay Scale: {_S['post_pay_scale']}\n"
         f"- Current Payscale Hold: {_S['payscale']}\n"
         f"- Current Basic Pay: {_S['basic_pay']}\n"
         f"- ACR Availability: {_S['acr_availability']}\n"
@@ -203,12 +219,15 @@ def _format_bio_data() -> str:
         f"- Senior Scale Pass: {_S['senior_scale_pass']}\n"
         f"- Experience in Village: {_S['experience_in_village']}\n"
         f"- Service Confirmation GO No: {_S['service_confirmation_go']}, "
+        f"SL No: {_S['service_confirmation_sl_no']}, "
         f"GO Date: {_S['service_confirmation_go_date']}, "
         f"Service Confirmation Date: {_S['service_confirmation_date']}\n"
         f"- BCS/PSC Regularization GO: {_S['regularization_go']}, "
         f"SL No: {_S['regularization_sl_no']}, "
         f"Date: {_S['regularization_date']}\n\n"
         "Education:\n"
+        f"- {_E['masters']}: {_E['masters_degree']} "
+        f"({_E['masters_discipline']}), {_E['masters_year']}\n"
         f"- {_E['bachelor']}: MBBS, {_E['bachelor_year']}\n"
     )
 
@@ -239,18 +258,21 @@ Guidelines:
 # ---------------------------------------------------------------------------
 OVERVIEW_ANSWER = (
     "She is an Assistant Professor in the Department of Physiology at "
-    "Shaheed Syed Nazrul Islam Medical College (SSNIMC), Kishoreganj, and she "
-    "has been working there since 2023. She studied at Monipur High School and "
-    "at Viqarunnisa Noon College, and she completed her MBBS in 2012. In her "
-    "official HRIS record she is a BCS (Health) cadre officer from Batch 32, "
-    "originally a Medical Officer, and she was posted on study deputation at "
-    "BSMMU. She has served as the Hostel Superintendent of Shila Islam Ladies "
-    "Hostel and as a member of the Hostel Disciplinary Committee and of the "
-    "Antiragging Committee, and she is currently a member of the Pair Medical "
-    "College Visiting Committee and of the Medical Education Unit at SSNIMC. "
-    "She is also the Vice President of the Mymensingh region of the Bangladesh "
-    "Society of Physiologists, and a member of the Education Sub-committee, "
-    "the Operational Manual Reform Sub-committee and the Teachers Benefit "
+    "Shaheed Syed Nazrul Islam Medical College (SSNIMC), Kishoreganj. "
+    "According to her official HRIS Bio-Data record she joined the college "
+    "on 24 October 2021 and has held her current designation since 16 March "
+    "2022, posted as Current Charge. She studied at Monipur High School and "
+    "at Viqarunnisa Noon College, and she completed her MBBS in 2011 and her "
+    "MD in Physiology in 2020. In her official HRIS record she is a BCS "
+    "(Health) cadre officer from Batch 32, originally a Medical Officer, "
+    "with two study deputations in her service record. She has served as "
+    "the Hostel Superintendent of Shila Islam Ladies Hostel and as a member "
+    "of the Hostel Disciplinary Committee and of the Antiragging Committee, "
+    "and she is currently a member of the Pair Medical College Visiting "
+    "Committee and of the Medical Education Unit at SSNIMC. She is also the "
+    "Vice President of the Mymensingh region of the Bangladesh Society of "
+    "Physiologists, and a member of the Education Sub-committee, the "
+    "Operational Manual Reform Sub-committee and the Teachers Benefit "
     "Sub-committee of the Bangladesh Society of Physiologists."
 )
 
@@ -331,9 +353,11 @@ KNOWLEDGE: Tuple[Topic, ...] = (
             "assistant professor", "what does she do", "what is her post",
             "which post", "her rank",
         ),
-        "She is an Assistant Professor. Her present designation is Assistant "
-        "Professor in the Department of Physiology at Shaheed Syed Nazrul Islam "
-        "Medical College, Kishoreganj.",
+        "She is an Assistant Professor in the Department of Physiology at "
+        "Shaheed Syed Nazrul Islam Medical College, Kishoreganj. Her present "
+        "posting is Assistant Professor (Physiology), Post Pay Scale "
+        f"{_S['post_pay_scale']}, and she has held this designation since "
+        f"{_S['joining_date_current_designation']} (16 March 2022).",
     ),
     Topic(
         "department",
@@ -353,16 +377,22 @@ KNOWLEDGE: Tuple[Topic, ...] = (
             "posted", "hospital", "which college does she work",
         ),
         "She works at Shaheed Syed Nazrul Islam Medical College (SSNIMC) in "
-        "Kishoreganj, and she has been working at the institution since 2023.",
+        "Kishoreganj as Assistant Professor (Physiology). She joined the "
+        f"institution on {_S['joining_date_current_place']} (24 October "
+        "2021) and is posted there as Current Charge.",
     ),
     Topic(
         "tenure",
         (
-            "since when", "how long", "joined", "joining", "since 2023",
-            "started working", "years of service", "how many years",
+            "since when", "how long", "joined", "joining", "since 2021",
+            "when did she join", "started working", "years of service",
+            "how many years",
         ),
-        "She has been working at Shaheed Syed Nazrul Islam Medical College, "
-        "Kishoreganj since 2023.",
+        "She joined Shaheed Syed Nazrul Islam Medical College, Kishoreganj "
+        f"on {_S['joining_date_current_place']} (24 October 2021), and she "
+        "has held her current designation of Assistant Professor "
+        f"(Physiology) since {_S['joining_date_current_designation']} "
+        "(16 March 2022).",
     ),
     Topic(
         "school",
@@ -385,7 +415,8 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         ),
         "She studied at Monipur High School and then at Viqarunnisa Noon "
         f"College. She completed her {_E['bachelor']} degree in "
-        f"{_E['bachelor_year']}.",
+        f"{_E['bachelor_year']} and her {_E['masters_degree']} in "
+        f"{_E['masters_discipline']} in {_E['masters_year']}.",
     ),
     Topic(
         "mbbs",
@@ -397,6 +428,17 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         f"{_E['bachelor_year']}, and her staff professional category is "
         f"{_O['staff_professional_category']}, according to her official HRIS "
         "record.",
+    ),
+    Topic(
+        "md",
+        (
+            "md", "md degree", "masters", "master degree", "masters degree",
+            "postgraduate", "post graduate", "pg degree", "highest degree",
+            "doctor of medicine", "specialisation", "specialization",
+        ),
+        f"She holds a {_E['masters']} degree: an {_E['masters_degree']} in "
+        f"{_E['masters_discipline']}, completed in {_E['masters_year']}, "
+        "according to her official HRIS record.",
     ),
     Topic(
         "bcs",
@@ -420,7 +462,8 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         f"{_S['first_appointment_sl_no']}, dated "
         f"{_S['first_appointment_date']}) and her service was confirmed on 30 "
         f"October 2013 (Service Confirmation GO No "
-        f"{_S['service_confirmation_go']}, dated "
+        f"{_S['service_confirmation_go']}, SL No "
+        f"{_S['service_confirmation_sl_no']}, GO dated "
         f"{_S['service_confirmation_go_date']}). She has passed the senior "
         "scale and has experience of working in a village.",
     ),
@@ -435,20 +478,23 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         f"General of Health Services, her HRIS ID is {_S['hris_id']}, her "
         f"Post ID is {_S['post_id']} and her doctor code number is "
         f"{_S['code_no']}. Her original designation is "
-        f"{_S['original_designation']}, she holds pay scale {_S['payscale']} "
-        f"with a basic pay of {_S['basic_pay']} (as recorded in 2021), and "
-        "ACRs are available for 2014 to 2019.",
+        f"{_S['original_designation']} and she is currently posted as "
+        "Assistant Professor (Physiology), posted as Current Charge. She "
+        f"holds pay scale {_S['payscale']} (post pay scale "
+        f"{_S['post_pay_scale']}) with a basic pay of {_S['basic_pay']}, "
+        "and ACRs are available for 2014 to 2020.",
     ),
     Topic(
         "deputation",
         (
             "deputation", "study deputation", "bsmmu", "on deputation",
-            "bangabandhu sheikh mujib", "osd",
+            "bangabandhu sheikh mujib", "osd", "current charge",
         ),
-        f"According to her official HRIS record (dated 21 January 2021), she "
-        f"was posted on study deputation at Bangabandhu Sheikh Mujib Medical "
-        f"University (BSMMU), Dhaka, and the record shows "
-        f"{_S['number_of_study_deputations']} study deputations in total. Her "
+        "Her current HRIS record shows her posted as Current Charge at "
+        "Shaheed Syed Nazrul Islam Medical College, Kishoreganj, with "
+        f"{_S['number_of_study_deputations']} study deputations in her "
+        "service record. Earlier records showed her on study deputation at "
+        "Bangabandhu Sheikh Mujib Medical University (BSMMU), Dhaka. Her "
         f"original designation is {_S['original_designation']}.",
     ),
     Topic(
@@ -577,7 +623,7 @@ KNOWLEDGE: Tuple[Topic, ...] = (
             "full profile", "full record", "complete record", "entire record",
             "whole record", "all fields", "every detail",
         ),
-        "Here is her complete HRIS Bio-Data record (dated 21 January 2021):"
+        "Here is her complete HRIS Bio-Data record (signed 25-10-2026):"
         f"\n\n{_format_bio_data().strip()}",
     ),
     Topic(
