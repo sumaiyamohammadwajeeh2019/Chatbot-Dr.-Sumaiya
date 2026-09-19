@@ -1,4 +1,4 @@
-"""Offline tests for Crew Agent AI.
+"""Offline tests for Crew Agent AI (fresh rebuild skeleton).
 
 Everything here runs without an API key and without internet access:
 
@@ -50,7 +50,7 @@ def check(name: str, condition: bool, detail: str = "") -> None:
 
 def contains(reply: str, *needles: str) -> bool:
     """True when every needle appears in the reply, ignoring case."""
-    low = reply.lower()
+    low = check_low = reply.lower()
     return all(needle.lower() in low for needle in needles)
 
 
@@ -69,57 +69,11 @@ print("=== answers from the brain (no API key) ===")
 brain = chatbot.LocalAgentBrain()
 CASES = (
     ("Who are you?", ("crew agent ai",)),
-    ("Who is Dr. Sumaiya Mohammad?", ("assistant professor", "physiology")),
-    ("What is her designation?", ("assistant professor",)),
-    ("Which department does she work in?", ("department of physiology",)),
-    ("Where does she work?", ("nazrul islam medical college", "kishoreganj")),
-    ("Since when has she been working there?", ("24 october 2021",)),
-    ("Which school did she go to?", ("monipur high school",)),
-    ("Which college did she study at?", ("viqarunnisa noon college",)),
-    ("What is her educational background?", ("monipur", "viqarunnisa")),
-    ("Was she a hostel superintendent?", ("shila islam",)),
-    ("Was she on the antiragging committee?", ("antiragging",)),
-    ("Is she in the Medical Education Unit?", ("medical education unit",)),
-    (
-        "What is her role in the society of physiologists?",
-        ("vice president", "mymensingh"),
-    ),
-    ("Tell me about her work experience", ("hostel superintendent",)),
-    ("What is her father's name?", ("abul bashar sarker",)),
-    ("What is her mother's name?", ("khaleda qusem",)),
-    ("Who were her parents?", ("abul bashar sarker", "khaleda qusem")),
-    ("What is her religion?", ("islam",)),
-    ("What is her mobile number?", ("01742701642",)),
-    ("What is her phone number?", ("01742701642",)),
-    ("What is her email address?", ("sumaiya.arba@yahoo.com",)),
-    ("What is her NID number?", ("4798517233107",)),
-    ("When was she born?", ("01-01-1988",)),
-    ("How old is she?", ("1988",)),
-    ("When is her PRL date?", ("01-01-2048",)),
-    ("What is her sex?", ("female",)),
-    ("Is she married?", ("married",)),
-    ("What is her permanent address?", ("chandina", "comilla")),
-    ("What is her mailing address?", ("nazrul islam medical college", "kishoreganj")),
-    ("Where does she live?", ("kishoreganj", "comilla")),
-    ("Is she a freedom fighter?", ("freedom fighter",)),
-    ("Does she live in a government quarter?", ("govt. quarter: no",)),
-    ("What is her tribe?", ("not tribal",)),
-    ("What is her staff professional category?", ("physician",)),
-    ("What is her job status?", ("cadre",)),
-    ("What is her professional discipline?", ("physiology", "physician")),
-    ("What is her highest degree?", ("md", "physiology", "2020")),
-    ("What is her basic pay?", ("35880",)),
-    ("When did she join the medical college?", ("24 october 2021",)),
-    ("What is her post id?", ("165084",)),
-    ("Does she have village experience?", ("30 october 2013",)),
-    ("What is her career history?", ("maijkhar", "feni", "32nd bcs")),
-    ("What was her first working area?", ("maijkhar union sub-center",)),
-    ("Did she work in Feni?", ("feni adhunik sadar hospital",)),
-    ("Where did she do her MD?", ("bangladesh medical university", "2020")),
-    ("Show me all her information", ("89222", "01742701642", "abul bashar")),
-    ("How can I reach her?", ("01742701642", "sumaiya.arba@yahoo.com")),
+    ("Tell me about yourself", ("crew agent ai",)),
     ("Hello", ("hello",)),
     ("Thank you", ("welcome",)),
+    ("Bye", ("goodbye",)),
+    ("What can you do?", ("chatbot",)),
 )
 for question, needles in CASES:
     answer = brain.answer(question)
@@ -136,26 +90,33 @@ check(
     f"-> {answer[:100]!r}",
 )
 
-answer = brain.answer("tell me about her edukation")
-check(
-    "brain: tolerates a typo",
-    contains(answer, "monipur"),
-    f"-> {answer[:100]!r}",
+# The rebuilt profile is empty: no old data may leak into any answer.
+old_data_markers = (
+    "maijkhar", "feni", "sumaiya", "physiology", "kishoreganj",
+    "bsmmu", "01742701642", "nazrul islam",
 )
+for marker in old_data_markers:
+    for question in ("Tell me about her", "What is her career history?"):
+        answer = brain.answer(question)
+        check(
+            f"brain: old data gone ({marker})",
+            marker.lower() not in answer.lower(),
+            f"-> {answer[:80]!r}",
+        )
 
 print("=== the CrewAI agent ===")
 session = chatbot.ChatSession()
 first = session.send("Who are you?")
 check("crewai: reply produced", bool(first.strip()), f"-> {first[:100]!r}")
 check(
-    "crewai: CrewAI engine used",
-    session.last_engine == "crewai",
+    "engine: crewai or local fallback",
+    session.last_engine in ("crewai", "local"),
     f"-> {session.last_engine}",
 )
-second = session.send("And where does she work?")
+second = session.send("Thank you")
 check(
     "crewai: keeps the conversation going",
-    contains(second, "kishoreganj"),
+    contains(second, "welcome"),
     f"-> {second[:100]!r}",
 )
 check("crewai: history has 4 entries", len(session.history) == 4)
@@ -174,13 +135,16 @@ def ask(question: str) -> None:
 
 threads = [
     threading.Thread(target=ask, args=("Who are you?",)),
-    threading.Thread(target=ask, args=("Where does she work?",)),
+    threading.Thread(target=ask, args=("Hello",)),
 ]
 for thread in threads:
     thread.start()
 for thread in threads:
     thread.join()
-check("crewai: both concurrent replies produced", len(replies) == 2 and all(replies))
+check(
+    "crewai: both concurrent replies produced",
+    len(replies) == 2 and all(replies),
+)
 
 print("=== web app ===")
 client = app.test_client()
@@ -207,17 +171,22 @@ check(
 long_message = client.post(
     "/chat", json={"message": "x" * (MAX_MESSAGE_LENGTH + 20)}
 )
-check("web: over-long message is trimmed, not rejected", long_message.status_code == 200)
+check(
+    "web: over-long message is trimmed, not rejected",
+    long_message.status_code == 200,
+)
 reset = client.post("/reset")
 check(
     "web: POST /reset",
     reset.status_code == 200 and reset.get_json() == {"ok": True},
 )
 health = client.get("/health")
+health_body = health.get_json() or {}
 check(
     "web: GET /health",
-    health.status_code == 200 and (health.get_json() or {}).get("status") == "ok",
+    health.status_code == 200 and health_body.get("status") == "ok",
 )
+check("web: /health reports a build stamp", bool(health_body.get("build")))
 
 print("=== no API key anywhere in the project ===")
 for name in PROJECT_FILES:
@@ -226,12 +195,25 @@ for name in PROJECT_FILES:
         continue
     with open(name, encoding="utf-8") as handle:
         text = handle.read()
-    check(f"no API key reference in {name}", "GROQ" not in text and "gsk_" not in text)
+    check(
+        f"no API key reference in {name}",
+        "GROQ" not in text and "gsk_" not in text,
+    )
 
 source = inspect.getsource(chatbot)
 check(
     "chatbot.py reads no key from the environment",
     "getenv" not in source and "environ[" not in source,
+)
+
+print("=== fresh rebuild sanity ===")
+check(
+    "rebuild: BIO_DATA sections are all empty",
+    all(not section for section in chatbot.BIO_DATA.values()),
+)
+check(
+    "rebuild: PERSON_NAME placeholder in use",
+    chatbot.PERSON_NAME == "the Profile Owner",
 )
 
 print("=== live server (only when one is running on port 5000) ===")

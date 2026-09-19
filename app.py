@@ -22,7 +22,7 @@ from chatbot import AGENT_NAME, CREW_AVAILABLE, PERSON_NAME, ChatSession
 
 # Build stamp: bump this value whenever the knowledge base or app changes.
 # /health reports it, so you can always verify which build is live on Render.
-APP_BUILD = "2026-09-19.3"
+APP_BUILD = "2026-09-19.4-rebuild"
 
 logging.basicConfig(
     level=logging.INFO,
