@@ -150,6 +150,20 @@ BIO_DATA: Dict[str, Dict[str, str]] = {
         "masters_discipline": "Physiology",
         "masters_year": "2020",
     },
+    "career_history": {
+        "bcs_batch": "32nd BCS",
+        "cadre": "Health cadre",
+        "first_posting": "Maijkhar Union Sub-center",
+        "second_posting": "Feni Adhunik Sadar Hospital",
+        "masters_institution": (
+            "Bangladesh Medical University (BSMMU), Dhaka - for her Masters "
+            "degree in Physiology"
+        ),
+        "masters_completion_year": "2020",
+        "current_institution": (
+            "Shaheed Syed Nazrul Islam Medical College, Kishoreganj"
+        ),
+    },
 }
 
 # Shorthand sections used by the topics and the profile renderer below.
@@ -157,6 +171,7 @@ _P = BIO_DATA["personal"]
 _O = BIO_DATA["other"]
 _S = BIO_DATA["service"]
 _E = BIO_DATA["education"]
+_C = BIO_DATA["career_history"]
 
 
 def _format_bio_data() -> str:
@@ -225,6 +240,13 @@ def _format_bio_data() -> str:
         f"- BCS/PSC Regularization GO: {_S['regularization_go']}, "
         f"SL No: {_S['regularization_sl_no']}, "
         f"Date: {_S['regularization_date']}\n\n"
+        "Career History:\n"
+        f"- BCS Batch: {_C['bcs_batch']} ({_C['cadre']})\n"
+        f"- First working area: {_C['first_posting']}\n"
+        f"- Then: {_C['second_posting']}\n"
+        f"- Masters study: {_C['masters_institution']}\n"
+        f"- MD (Physiology) completed: {_C['masters_completion_year']}\n"
+        f"- Joined after the MD: {_C['current_institution']}\n\n"
         "Education:\n"
         f"- {_E['masters']}: {_E['masters_degree']} "
         f"({_E['masters_discipline']}), {_E['masters_year']}\n"
@@ -265,7 +287,12 @@ OVERVIEW_ANSWER = (
     "at Viqarunnisa Noon College, and she completed her MBBS in 2011 and her "
     "MD in Physiology in 2020. In her official HRIS record she is a BCS "
     "(Health) cadre officer from Batch 32, originally a Medical Officer, "
-    "with two study deputations in her service record. She has served as "
+    "with two study deputations in her service record. Her first working "
+    "area was Maijkhar Union Sub-center; she then served at Feni Adhunik "
+    "Sadar Hospital, went to Bangladesh Medical University (BSMMU), Dhaka "
+    "for her Masters in Physiology, completed her MD (Physiology) in 2020, "
+    "and then joined Shaheed Syed Nazrul Islam Medical College, Kishoreganj. "
+    "She has served as "
     "the Hostel Superintendent of Shila Islam Ladies Hostel and as a member "
     "of the Hostel Disciplinary Committee and of the Antiragging Committee, "
     "and she is currently a member of the Pair Medical College Visiting "
@@ -280,7 +307,9 @@ UNKNOWN_ANSWER = (
     "I'm sorry, I don't have that information about Dr. Sumaiya Mohammad and "
     "I would rather not guess.\n\n"
     "I can help with her designation, department, institution, educational "
-    "background, MBBS degree, personal information (family, date of birth, "
+    "background, MBBS degree, career history (Maijkhar Union Sub-center, Feni "
+    "Adhunik Sadar Hospital and Bangladesh Medical University), personal "
+    "information (family, date of birth, "
     "religion, addresses and contact details), her complete government service "
     "record, her teaching, and the committees and societies she is part of. "
     "You can also ask for all her information at once."
@@ -320,7 +349,9 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         ),
         f"I am the {AGENT_NAME} - {PERSON_NAME}'s personal assistant chatbot. "
         "I can tell you about her designation, department and institution, her "
-        "educational background and MBBS degree, her personal information "
+        "educational background and MBBS degree, her career history (Maijkhar "
+        "Union Sub-center, Feni Adhunik Sadar Hospital and Bangladesh Medical "
+        "University), her personal information "
         "(family, date of birth, religion, addresses and contact details), her "
         "complete government service record, her teaching, and the committees "
         "and societies she works with. I run here on this computer, so no API "
@@ -438,7 +469,9 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         ),
         f"She holds a {_E['masters']} degree: an {_E['masters_degree']} in "
         f"{_E['masters_discipline']}, completed in {_E['masters_year']}, "
-        "according to her official HRIS record.",
+        "according to her official HRIS record. She earned it at Bangladesh "
+        "Medical University (BSMMU), Dhaka, which she joined after working "
+        "at Maijkhar Union Sub-center and Feni Adhunik Sadar Hospital.",
     ),
     Topic(
         "bcs",
@@ -493,9 +526,29 @@ KNOWLEDGE: Tuple[Topic, ...] = (
         "Her current HRIS record shows her posted as Current Charge at "
         "Shaheed Syed Nazrul Islam Medical College, Kishoreganj, with "
         f"{_S['number_of_study_deputations']} study deputations in her "
-        "service record. Earlier records showed her on study deputation at "
-        "Bangabandhu Sheikh Mujib Medical University (BSMMU), Dhaka. Her "
-        f"original designation is {_S['original_designation']}.",
+        "service record. She was on study deputation at Bangladesh Medical "
+        "University (formerly Bangabandhu Sheikh Mujib Medical University, "
+        "BSMMU), Dhaka, where she completed her MD in Physiology in 2020. "
+        f"Her original designation is {_S['original_designation']}.",
+    ),
+    Topic(
+        "career_history",
+        (
+            "career history", "career path", "work history", "job history",
+            "posting history", "previous posting", "first posting",
+            "first working area", "worked before", "work before",
+            "before joining", "maijkhar", "union sub", "sub center",
+            "subcentre", "feni", "adhunik", "sadar hospital",
+            "bangladesh medical university", "where did she work",
+            "where has she worked", "transfer", "transferred",
+        ),
+        f"She is a {_C['bcs_batch']} ({_C['cadre']}) officer. Her first "
+        f"working area was {_C['first_posting']}. She then worked at "
+        f"{_C['second_posting']}. From there she went to "
+        f"{_C['masters_institution']}, where she completed her MD "
+        f"(Physiology) in {_C['masters_completion_year']}. She then joined "
+        f"{_C['current_institution']}, where she is now an Assistant "
+        "Professor (Physiology).",
     ),
     Topic(
         "father",
