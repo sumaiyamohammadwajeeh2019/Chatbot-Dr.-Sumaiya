@@ -49,6 +49,9 @@ telemetry is switched off, so the app makes no outward network calls.
 
 - Python 3.10 or newer (the code uses `str | None` style type hints)
 - No API key, no account, no credit card
+- Optional: `crewai` + `langchain-core` — the bot's answers come from the same
+  local brain with or without it, so the cloud build on Render skips them to
+  stay fast and inside the free plan's 512 MB memory limit
 
 ---
 
@@ -74,6 +77,15 @@ telemetry is switched off, so the app makes no outward network calls.
    ```
 
    There is nothing else to configure — no key, no `.env` file.
+
+   Optional (to run the full CrewAI crew locally, exactly as described above):
+
+   ```bash
+   python -m pip install "crewai==0.11.2" "langchain-core>=0.1.42,<0.2"
+   ```
+
+   The replies are identical either way — every answer is written by the local
+   brain in `chatbot.py`.
 
 | Variable | Meaning | Example |
 |----------|---------|---------|
@@ -200,6 +212,10 @@ and creates the same service.
 > Free instances sleep after about 15 minutes without traffic and take roughly a
 > minute to wake again on the next request.
 
+> The Render build installs only Flask and Gunicorn. The optional CrewAI
+> packages are skipped there, so the build finishes in under a minute and the
+> service boots comfortably inside the free plan's 512 MB memory limit.
+
 ---
 
 ## Troubleshooting
@@ -208,7 +224,7 @@ and creates the same service.
 |---------|-----|
 | `Address already in use` | Another program (often an old copy of this app) is using port 5000. Stop it, or run with another port: `set PORT=5001` then `python app.py` |
 | Browser shows "can't reach this page" | Make sure the terminal still shows the server running, then reload <http://localhost:5000> |
-| `ModuleNotFoundError: crewai` | Install the dependencies: `python -m pip install -r requirements.txt` |
+| `ModuleNotFoundError: crewai` | Optional package: the app works without it. To run the CrewAI crew locally: `python -m pip install "crewai==0.11.2" "langchain-core>=0.1.42,<0.2"` |
 | A pydantic warning about V1/V2 models on start-up | Harmless: it comes from CrewAI's own LangChain integration and is filtered out by `chatbot.py` |
 
 ---

@@ -17,7 +17,9 @@ How it works
 3. LocalCrewLLM wraps the brain in the LangChain LLM interface that CrewAI
    expects, so every reply is produced by a real CrewAI crew - one Agent,
    one Task, sequential Process (the "Crew Agent AI") - with the brain
-   acting as the local language model.
+   acting as the local language model. CrewAI is optional: without the
+   crewai package the same brain answers directly (identical replies),
+   which keeps the cloud build (Render) small, fast and reliable.
 4. ChatSession keeps the conversation history and exposes send()/reset().
 """
 
@@ -43,13 +45,35 @@ os.environ.setdefault("CREWAI_TELEMETRY_OPT_OUT", "true")
 # pydantic print a harmless "Mixing V1 models and V2 models" warning.
 warnings.filterwarnings("ignore", message=".*Mixing V1 models and V2 models.*")
 
-from crewai import Agent, Crew, Process, Task  # noqa: E402
-from langchain_core.callbacks.manager import (  # noqa: E402
-    CallbackManagerForLLMRun,
-)
-from langchain_core.language_models.llms import LLM  # noqa: E402
+try:
+    from crewai import Agent, Crew, Process, Task  # noqa: E402
+    from langchain_core.callbacks.manager import (  # noqa: E402
+        CallbackManagerForLLMRun,
+    )
+    from langchain_core.language_models.llms import LLM  # noqa: E402
+
+    CREW_AVAILABLE = True
+except Exception:  # crewai/langchain-core are optional extras
+    Agent = Crew = Process = Task = LLM = None  # type: ignore[assignment]
+    CallbackManagerForLLMRun = None  # type: ignore[assignment]
+    CREW_AVAILABLE = False
 
 LOGGER = logging.getLogger(__name__)
+
+if not CREW_AVAILABLE:
+    LOGGER.info(
+        "crewai/langchain-core are not installed; every question will be "
+        "answered from the local brain (the answers are identical)."
+    )
+
+# Stand-in base class so LocalCrewLLM can still be defined when the optional
+# crewai/langchain-core packages are missing (it is simply never used then).
+if CREW_AVAILABLE:
+    _LLM_BASE = LLM
+else:
+
+    class _LLM_BASE:  # type: ignore[no-redef]
+        """Placeholder base; LocalCrewLLM is never instantiated without crewai."""
 
 # Name shown in the web interface and used by the chatbot in its replies.
 AGENT_NAME = "Crew Agent AI"
@@ -920,7 +944,7 @@ class LocalAgentBrain:
 # ---------------------------------------------------------------------------
 # The CrewAI "language model": a thin LangChain wrapper around the brain.
 # ---------------------------------------------------------------------------
-class LocalCrewLLM(LLM):
+class LocalCrewLLM(_LLM_BASE):
     """The model CrewAI drives - answered by LocalAgentBrain, never the net.
 
     CrewAI talks to its LLM through LangChain and expects a ReAct-style
@@ -952,6 +976,8 @@ class LocalCrewLLM(LLM):
 
 def build_crew(llm: LLM, task_description: str, verbose: bool = False) -> Crew:
     """Build the one-agent crew that produces the assistant's reply."""
+    if not CREW_AVAILABLE:
+        return None  # type: ignore[return-value]
     agent = Agent(
         role=f"Personal assistant for {PERSON_NAME} ({AGENT_NAME})",
         goal=(
@@ -1026,6 +1052,9 @@ class ChatSession:
     # --------------------------------------------------------------- helpers
     def _reply(self, message: str) -> str:
         """Ask the CrewAI crew for a reply, falling back to the brain."""
+        if not CREW_AVAILABLE:
+            self.last_engine = "local"
+            return self.brain.answer(message)
         try:
             llm = LocalCrewLLM(brain=self.brain, question=message)
             crew = build_crew(

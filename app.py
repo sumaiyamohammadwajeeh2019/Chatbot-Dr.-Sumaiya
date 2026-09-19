@@ -18,7 +18,7 @@ from typing import Optional
 
 from flask import Flask, jsonify, render_template, request
 
-from chatbot import AGENT_NAME, PERSON_NAME, ChatSession
+from chatbot import AGENT_NAME, CREW_AVAILABLE, PERSON_NAME, ChatSession
 
 logging.basicConfig(
     level=logging.INFO,
@@ -109,7 +109,11 @@ def health():
             "status": "ok",
             "agent": AGENT_NAME,
             "person": PERSON_NAME,
-            "engine": "CrewAI agent (local, no API key)",
+            "engine": (
+                "CrewAI agent (local, no API key)"
+                if CREW_AVAILABLE
+                else "Local brain (CrewAI optional package not installed)"
+            ),
         }
     )
 

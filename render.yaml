@@ -15,7 +15,9 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120
     envVars:
-      # crewai 0.11.2 requires Python >=3.10,<4.0; 3.11 is what this build is
-      # tested against.
+      # Python 3.11 is what this build is tested against. The build installs
+      # only Flask and Gunicorn; crewai is an optional extra (the chatbot
+      # answers identically from its local brain without it), which keeps the
+      # free-plan build small, fast and inside the 512 MB memory limit.
       - key: PYTHON_VERSION
         value: "3.11.9"
