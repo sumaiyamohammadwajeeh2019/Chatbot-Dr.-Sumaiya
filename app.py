@@ -20,6 +20,10 @@ from flask import Flask, jsonify, render_template, request
 
 from chatbot import AGENT_NAME, CREW_AVAILABLE, PERSON_NAME, ChatSession
 
+# Build stamp: bump this value whenever the knowledge base or app changes.
+# /health reports it, so you can always verify which build is live on Render.
+APP_BUILD = "2026-09-19.3"
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
@@ -114,6 +118,7 @@ def health():
                 if CREW_AVAILABLE
                 else "Local brain (CrewAI optional package not installed)"
             ),
+            "build": APP_BUILD,
         }
     )
 
